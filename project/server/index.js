@@ -10,7 +10,15 @@ import userauthRoutes from "./routes/Createuser.js";
 dotenv.config();
 
 const app = express();
-app.use(cors());
+const corsOptions = {
+  origin: ['https://digitalwallet-wheat.vercel.app/',
+  "http://localhost:5173"],
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization', "Origin","X-Requested-With","Accept"],
+};
+
+app.use(cors(corsOptions));
+
 
 // JSON parsing
 app.use(express.json());
