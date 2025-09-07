@@ -1,0 +1,74 @@
+.navbar{
+    display:flex ;
+    justify-content: space-around ;
+    align-items: center ;
+    position: sticky!important;
+    top:0px !important ;
+    z-index: 999 !important;
+    background-color: #F4F5F0;
+    
+  
+}
+.header-logo{
+    object-fit: contain;
+    width:15vmin;
+    height:15vmin;
+    cursor: pointer;
+    margin-left:2vmin;
+
+}
+
+
+.list{
+    display:flex;
+    list-style: none;
+    position: relative;
+ 
+    
+    
+}
+.list-content{
+    margin-left: 15vmin;
+    font-size:16.5px;
+    color:#3f2537;
+    font-family:Georgia, 'Times New Roman', Times, serif;
+    cursor:pointer;
+    text-transform: uppercase;
+    padding: 1vmin;
+
+    
+
+}
+#signup{
+    border-style: solid;
+    border-width: 1px;
+    border-radius: 1vmin;
+    background-color:indianred;
+    color: white;
+    position:relative;
+    box-shadow: 2px 2px 2px lightgray;
+    
+
+
+}
+#login{
+    border-style: solid;
+    border-width: 1px;
+    border-radius: 1vmin;
+    background-color:lightgray;
+    border:none;
+    margin-right:5vmin;
+    position:relative;
+    box-shadow: 2px 2px 2px lightgray;
+   
+  
+}
+#signup:hover{
+    background-color:lightcoral;
+    
+
+}
+#login:hover{
+    background-color: lightslategray;
+    color:white;
+}

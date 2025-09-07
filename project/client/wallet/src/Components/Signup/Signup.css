@@ -1,0 +1,70 @@
+.signup{
+   
+    font-family: 'Times New Roman', Times, serif;
+    border:solid thin gray;
+    padding: 2vmin;
+    margin-top: 1vmin;
+    box-shadow: 2px 2px 2px lightgray;
+}
+.signup input{
+    width:60vmin;
+   
+    
+}
+.main-div{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.first-div{
+    flex:0.2;
+}
+.third-div{
+    flex:0.2;
+}
+.form-group{
+    margin-top: 5vmin;
+}
+.button{
+    display:flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 4vmin;
+}
+.button button{
+    margin-left: 3vmin;
+}
+.custom-btn{ 
+    background-color: indianred;
+    color:white
+}
+.custom-btn:hover{
+    color:white;
+    background-color: indianred;
+}
+.logo{
+    height: 8vmin;
+    object-fit: contain;
+    flex: 1;
+    width: auto;
+    
+   
+   
+
+}
+.sign-up-logo-div{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.message{
+    color:grey;
+    margin-top: 2vmin;
+    font-size: 20px;
+    text-align: center;
+}
+
+
+
+
+

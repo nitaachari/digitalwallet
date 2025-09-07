@@ -1,0 +1,55 @@
+.message {
+  color: gray;
+  font-style: italic;
+  font-family: 'Times New Roman', Times, serif;
+  margin-bottom: 2vmin;
+}
+
+.login {
+  font-family: 'Times New Roman', Times, serif;
+  border: solid thin gray;
+  padding: 2vmin;
+  margin-top: 1vmin;
+}
+
+.main-div {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.first-div {
+  flex: 0.2;
+}
+
+.third-div {
+  flex: 0.2;
+}
+
+.form-group {
+  margin-top: 5vmin;
+}
+
+.logo {
+  height: 8vmin;
+  object-fit: contain;
+  margin-left: 6vmin;
+  margin-top: 3vmin;
+}
+
+.button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 1vmin;
+}
+
+.custom-btn {
+  background-color: coral;
+  color: white;
+}
+
+.custom-btn:hover {
+  background-color: coral;
+  color: white;
+}
