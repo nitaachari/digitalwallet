@@ -11,7 +11,7 @@ dotenv.config();
 
 const app = express();
 const corsOptions = {
-  origin: ['https://digitalwallet-wheat.vercel.app/',
+  origin: ['https://digitalwallet-wheat.vercel.app',
   "http://localhost:5173"],
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization', "Origin","X-Requested-With","Accept"],
