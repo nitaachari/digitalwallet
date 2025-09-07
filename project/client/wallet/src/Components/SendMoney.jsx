@@ -1,32 +1,48 @@
 import { useState } from "react";
 
-const API = "http://localhost:4000";
+const API = import.meta.env.VITE_API_URL;
 
-export default function SendMoney({ token }) {
+
+export default function SendMoney() {
   const [to, setTo] = useState("");
   const [amt, setAmt] = useState("");
 
   async function send(e) {
     e.preventDefault();
+    const fromEmail = localStorage.getItem("useremail");
+
     const res = await fetch(`${API}/wallet/send`, {
       method: "POST",
-      headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
-      body: JSON.stringify({ toEmail: to, amountPaise: Number(amt) * 100 }),
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        fromEmail,
+        toEmail: to,
+        amountPaise: Number(amt) * 100,
+      }),
     });
+
     const data = await res.json();
-    if (res.ok) {
-      alert("Transfer successful");
+    if (res.ok && data.success) {
+      alert("✅ Transfer successful");
       setTo("");
       setAmt("");
     } else {
-      alert(data.error);
+      alert("❌ " + (data.error || "Something went wrong"));
     }
   }
 
   return (
     <div style={{ textAlign: "center" }}>
       <h3>Send Money</h3>
-      <form onSubmit={send} style={{ display: "grid", gap: "0.5rem", maxWidth: "300px", margin: "1rem auto" }}>
+      <form
+        onSubmit={send}
+        style={{
+          display: "grid",
+          gap: "0.5rem",
+          maxWidth: "300px",
+          margin: "1rem auto",
+        }}
+      >
         <input
           type="email"
           value={to}
@@ -41,7 +57,9 @@ export default function SendMoney({ token }) {
           placeholder="Amount ₹"
           required
         />
-        <button type="submit" style={btn}>Send</button>
+        <button type="submit" style={btn}>
+          Send
+        </button>
       </form>
     </div>
   );

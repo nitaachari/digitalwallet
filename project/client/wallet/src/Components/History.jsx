@@ -1,17 +1,23 @@
 import { useEffect, useState } from "react";
 
-const API = "http://localhost:4000";
+const API = import.meta.env.VITE_API_URL;
 
-export default function History({ token }) {
+
+export default function History() {
   const [tx, setTx] = useState([]);
 
   useEffect(() => {
-    fetch(`${API}/wallet/tx`, {
-      headers: { Authorization: `Bearer ${token}` },
+    const email = localStorage.getItem("useremail");
+    if (!email) return;
+
+    fetch(`${API}/wallet/history`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email }),
     })
       .then((r) => r.json())
       .then(setTx);
-  }, [token]);
+  }, []);
 
   return (
     <div style={{ maxWidth: "600px", margin: "1rem auto" }}>
@@ -21,9 +27,13 @@ export default function History({ token }) {
         {tx.map((t) => (
           <li key={t._id} style={{ borderBottom: "1px solid #ddd", padding: "0.5rem" }}>
             <div style={{ display: "flex", justifyContent: "space-between" }}>
-              <span>{t.type} {t.counterparty ? `(${t.counterparty})` : ""}</span>
+              <span>
+                {t.type} {t.counterparty ? `(${t.counterparty})` : ""}
+              </span>
               <span>{new Date(t.createdAt).toLocaleString()}</span>
-              <strong>{t.type === "SEND" ? "-" : "+"}₹{(t.amount / 100).toFixed(2)}</strong>
+              <strong>
+                {t.type === "SEND" ? "-" : "+"}₹{(t.amount / 100).toFixed(2)}
+              </strong>
             </div>
             <small>Status: {t.status}</small>
           </li>

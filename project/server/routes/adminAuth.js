@@ -3,11 +3,14 @@ const router = express.Router();
 const Admin = require("../models/Admin");
 const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
+const dotenv=require("dotenv");
+dotenv.config();
 
 const JWT_SECRET = "supersecureadminsecret"; // Move this to .env in production
+const ADMIN_SECRET_KEY=process.env.ADMIN_SECRET_KEY;
 
 // Admin Signup
-router.post("/signup", async (req, res) => {
+router.post("/admin/signup", async (req, res) => {
   const { email, password } = req.body;
 
 
@@ -28,17 +31,18 @@ router.post("/signup", async (req, res) => {
 });
 
 // Admin Login
-router.post("/login", async (req, res) => {
-  const { email, password } = req.body;
+router.post("/admin/login", async (req, res) => {
+  const { adminKey } = req.body;
 
   try {
-    const admin = await Admin.findOne({ email });
-    if (!admin) return res.json({ success: false, error: "Invalid credentials" });
+    // ✅ Only check the secret key
+    if (adminKey !== ADMIN_SECRET_KEY) {
+      return res.json({ success: false, error: "Invalid admin key" });
+    }
 
-    const valid = await bcrypt.compare(password, admin.password);
-    if (!valid) return res.json({ success: false, error: "Invalid credentials" });
+    // Issue a token for session
+    const token = jwt.sign({ role: "admin" }, JWT_SECRET, { expiresIn: "1h" });
 
-    const token = jwt.sign({ email }, JWT_SECRET);
     res.json({ success: true, token });
   } catch (err) {
     res.status(500).json({ success: false, error: err.message });

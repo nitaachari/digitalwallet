@@ -6,7 +6,7 @@ import Balance from "./Components/Balance.jsx";
 import SendMoney from "./Components/SendMoney.jsx";
 import History from "./Components/History.jsx";
 import AdminDashboard from "./Components/Admin/AdminDashboard";
-import AdminSignup from "./Components/Admin/AdminSignup";
+
 import AdminLogin from "./Components/Admin/AdminLogin";
 import Signup from "./Components/Signup/Signup.jsx"
 import Home from "./screens/Home"
@@ -24,8 +24,8 @@ export default function App() {
           <Route path="/login" element={<Login />} />
         
          
-           <Route path="/admin/signup" element={<AdminSignup/>} />
-            <Route path="/admin/login" element={<AdminLogin/>} />
+           <Route path="/admin/signup" element={<AdminLogin/>} />
+           
 
         <Route path="/dashboard" element={<UserDashboard />} />
         <Route path="/add" element={<AddMoney />} />
@@ -35,7 +35,7 @@ export default function App() {
         
 
         {/* Admin Routes */}
-         <Route path="/admin" element={<AdminDashboard />} />
+         <Route path="/adminpanel" element={<AdminDashboard />} />
 
         
         

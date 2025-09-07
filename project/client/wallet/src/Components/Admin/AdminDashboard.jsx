@@ -1,10 +1,9 @@
 import { useEffect, useState } from "react";
 
-const API = "http://localhost:4000";
+const API = import.meta.env.VITE_API_URL;
 
 export default function AdminDashboard() {
   const [txs, setTxs] = useState([]);
-  const [adminName, setAdminName] = useState("");
 
   async function loadFlagged() {
     const res = await fetch(`${API}/admin/flagged`);
@@ -22,41 +21,14 @@ export default function AdminDashboard() {
     loadFlagged();
   }
 
-  function handleLogout() {
-    localStorage.clear();
-    window.location.href = "/"; // go back to login
-  }
-
   useEffect(() => {
     loadFlagged();
-    const stored = localStorage.getItem("adminName");
-    setAdminName(stored || "Admin");
   }, []);
 
   return (
     <div style={{ maxWidth: "800px", margin: "2rem auto" }}>
-      <header style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-        <h2>Welcome, {adminName}</h2>
-        <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
-          <li
-            className="list-content"
-            id="admin-logout"
-            onClick={handleLogout}
-            style={{
-              cursor: "pointer",
-              padding: "0.5rem 1rem",
-              border: "1px solid #444",
-              borderRadius: "6px",
-              display: "inline-block",
-            }}
-          >
-            Logout
-          </li>
-        </ul>
-      </header>
-
-      <h3 style={{ marginTop: "1.5rem" }}>Flagged Transactions</h3>
-      {!txs.length && <p>No flagged transactions 🚀</p>}
+      <h2>Admin Dashboard – Flagged Transactions</h2>
+      {!txs.length && <p>No flagged transactions.</p>}
       <ul style={{ listStyle: "none", padding: 0 }}>
         {txs.map((t) => (
           <li
@@ -69,13 +41,15 @@ export default function AdminDashboard() {
             }}
           >
             <p>
-              <strong>{t.type}</strong> – {t.counterparty || "N/A"} <br />
-              Amount: ₹{(t.amount / 100).toFixed(2)} <br />
+              <strong>{t.type}</strong> → {t.counterparty || "N/A"}  
+              <br />
+              Amount: ₹{(t.amount / 100).toFixed(2)}  
+              <br />
               Status: {t.status}
             </p>
             <div style={{ display: "flex", gap: "0.5rem" }}>
-              <button onClick={() => approve(t._id)}>Approve</button>
-              <button onClick={() => reject(t._id)}>Reject</button>
+              <button onClick={() => approve(t._id)} style={btn}>Approve</button>
+              <button onClick={() => reject(t._id)} style={btn}>Reject</button>
             </div>
           </li>
         ))}
@@ -84,3 +58,9 @@ export default function AdminDashboard() {
   );
 }
 
+const btn = {
+  padding: "0.5rem 1rem",
+  borderRadius: "6px",
+  border: "1px solid #444",
+  cursor: "pointer",
+};

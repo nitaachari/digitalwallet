@@ -5,7 +5,7 @@ import "./AdminLogin.css";
 const BASE_URL = import.meta.env.VITE_API_URL;
 
 function AdminLogin() {
-  const [credentials, setCredentials] = useState({ email: "", password: "" });
+  const [credentials, setCredentials] = useState({ email: "",  adminKey: "" });
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -41,7 +41,6 @@ function AdminLogin() {
         <h4 className="message">Admin Login Portal</h4>
 
         <div className="login">
-         
           <form onSubmit={handleSubmit}>
             <div className="form-group">
               <label htmlFor="adminEmail">Email address</label>
@@ -60,18 +59,22 @@ function AdminLogin() {
               </small>
             </div>
 
+
             <div className="form-group">
-              <label htmlFor="adminPassword">Password</label>
+              <label htmlFor="adminKey">Secret Admin Key</label>
               <input
-                type="password"
+                type="text"
                 className="form-control"
-                id="adminPassword"
-                placeholder="Password"
-                name="password"
-                value={credentials.password}
+                id="adminKey"
+                placeholder="Enter Secret Key"
+                name="adminKey"
+                value={credentials.adminKey}
                 onChange={onChange}
                 required
               />
+              <small className="form-text text-muted">
+                This key is provided only to authorized admins.
+              </small>
             </div>
 
             <div className="button">
@@ -79,11 +82,7 @@ function AdminLogin() {
                 Login
               </button>
 
-              <Link to="/admin/signup">
-                <button type="button" className="btn btn-primary m-4">
-                  I'm a new Admin
-                </button>
-              </Link>
+             
             </div>
           </form>
         </div>
@@ -95,5 +94,3 @@ function AdminLogin() {
 }
 
 export default AdminLogin;
-
-

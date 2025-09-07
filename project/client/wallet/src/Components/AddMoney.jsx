@@ -1,8 +1,7 @@
 import { useState } from "react";
 import { loadStripe } from "@stripe/stripe-js";
-import { Elements, PaymentElement, useStripe, useElements } from "@stripe/react-stripe-js";
+import { Elements, CardElement, useStripe, useElements } from "@stripe/react-stripe-js";
 
-// ✅ Load Stripe and API from env
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLIC_KEY);
 const API = import.meta.env.VITE_API_URL;
 
@@ -14,34 +13,42 @@ function CheckoutForm({ amt }) {
     e.preventDefault();
 
     if (!stripe || !elements) {
-      alert("Stripe not loaded yet");
+      alert("Stripe not ready yet");
       return;
     }
 
-    // Confirm payment
-    const { error, paymentIntent } = await stripe.confirmPayment({
-      elements,
-      redirect: "if_required",
+    const email = localStorage.getItem("useremail");
+
+    // 1) Create PaymentIntent
+    const res = await fetch(`${API}/wallet/create-payment-intent`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ amountPaise: Number(amt) * 100 }),
+    });
+    const { clientSecret } = await res.json();
+
+    // 2) Confirm payment with card input
+    const cardElement = elements.getElement(CardElement);
+    const { error, paymentIntent } = await stripe.confirmCardPayment(clientSecret, {
+      payment_method: { card: cardElement },
     });
 
     if (error) {
-      alert(error.message);
-    } else if (paymentIntent && paymentIntent.status === "succeeded") {
-      // ✅ Call backend to update balance in DB
-      const email = localStorage.getItem("useremail");
+      alert("❌ Payment failed: " + error.message);
+      return;
+    }
 
-      const res = await fetch(`${API}/wallet/addbalance`, {
-  method: "POST",
-  headers: { "Content-Type": "application/json" },
-  body: JSON.stringify({ email, amountPaise: Number(amt) * 100 }),
-});
-      
+    if (paymentIntent.status === "succeeded") {
+      // 3) Update balance in DB
+      const res2 = await fetch(`${API}/wallet/addbalance`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, amountPaise: Number(amt) * 100 }),
+      });
 
-
-
-      const data = await res.json();
-      if (res.ok && data.ok) {
-        alert(`Balance updated! New balance: ₹${data.newBalance / 100}`);
+      const data = await res2.json();
+      if (res2.ok && data.success) {
+        alert(`✅ Balance updated! New balance: ₹${data.balance / 100}`);
       } else {
         alert("Failed to update balance: " + (data.error || "Unknown error"));
       }
@@ -50,7 +57,7 @@ function CheckoutForm({ amt }) {
 
   return (
     <form onSubmit={handleSubmit} style={{ maxWidth: 400, margin: "1rem auto" }}>
-      <PaymentElement />
+      <CardElement />
       <button disabled={!stripe} style={btn}>Pay</button>
     </form>
   );
@@ -58,52 +65,18 @@ function CheckoutForm({ amt }) {
 
 export default function AddMoney() {
   const [amt, setAmt] = useState("");
-  const [clientSecret, setClientSecret] = useState("");
-
-  async function createIntent() {
-    const token = localStorage.getItem("authToken");
-    if (!token) {
-      alert("You must be logged in to add money.");
-      return;
-    }
-    if (!amt || Number(amt) <= 0) {
-      alert("Enter a valid amount");
-      return;
-    }
-
-    // ✅ Ask backend for PaymentIntent
-    const res = await fetch(`${API}/wallet/create-payment-intent`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({ amountPaise: Number(amt) * 100 }),
-    });
-
-    const data = await res.json();
-    if (res.ok && data.clientSecret) {
-      setClientSecret(data.clientSecret);
-    } else {
-      alert(data.error || "Failed to create payment intent");
-    }
-  }
 
   return (
     <div style={{ textAlign: "center" }}>
       <h3>Add Money</h3>
-      {!clientSecret ? (
-        <div>
-          <input
-            type="number"
-            value={amt}
-            onChange={(e) => setAmt(e.target.value)}
-            placeholder="Amount ₹"
-          />
-          <button onClick={createIntent} style={btn}>Proceed</button>
-        </div>
-      ) : (
-        <Elements stripe={stripePromise} options={{ clientSecret }}>
+      <input
+        type="number"
+        value={amt}
+        onChange={(e) => setAmt(e.target.value)}
+        placeholder="Amount ₹"
+      />
+      {amt > 0 && (
+        <Elements stripe={stripePromise}>
           <CheckoutForm amt={amt} />
         </Elements>
       )}

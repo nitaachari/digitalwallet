@@ -1,17 +1,27 @@
 import { useEffect, useState } from "react";
 
-const API = "http://localhost:4000";
+const API = import.meta.env.VITE_API_URL;
 
-export default function Balance({ token }) {
+
+export default function Balance() {
   const [balance, setBalance] = useState(0);
 
   useEffect(() => {
+    const email = localStorage.getItem("useremail");
+    if (!email) return;
+
     fetch(`${API}/wallet/balance`, {
-      headers: { Authorization: `Bearer ${token}` },
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email }),
     })
       .then((r) => r.json())
-      .then((d) => setBalance(d.balancePaise));
-  }, [token]);
+      .then((d) => {
+        if (d.balance !== undefined) {
+          setBalance(d.balance);
+        }
+      });
+  }, []);
 
   return (
     <div style={{ textAlign: "center" }}>

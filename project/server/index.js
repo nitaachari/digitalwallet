@@ -6,6 +6,7 @@ import dotenv from "dotenv";
 import adminRoutes from "./routes/admin.js";
 import walletRoutes from "./routes/wallet.js";
 import userauthRoutes from "./routes/Createuser.js";
+import adminAuthroutes from "./routes/adminAuth.js"
 
 dotenv.config();
 
@@ -28,6 +29,7 @@ mongoose.connect(process.env.URL).then(() => console.log("Mongo connected"));
 
 // Routes
 app.use(userauthRoutes);        // /createuser, /loginuser
+app.use(adminAuthroutes);
 app.use("/admin", adminRoutes); // /admin/flagged, etc.
 app.use("/wallet", walletRoutes); // /wallet/add-intent, /wallet/send, etc.
 

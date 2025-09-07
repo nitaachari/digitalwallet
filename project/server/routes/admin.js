@@ -4,7 +4,6 @@ import Tx from "../models/Tx.js";
 
 const router = express.Router();
 
-// Get all flagged transactions
 router.get("/flagged", async (req, res) => {
   try {
     const flagged = await Tx.find({ status: "FLAGGED" }).sort({ createdAt: -1 });
@@ -14,7 +13,7 @@ router.get("/flagged", async (req, res) => {
   }
 });
 
-// Approve flagged transaction → actually move money
+// 🔹 Approve a flagged transaction
 router.post("/approve/:id", async (req, res) => {
   try {
     const tx = await Tx.findById(req.params.id);
@@ -23,13 +22,12 @@ router.post("/approve/:id", async (req, res) => {
 
     const sender = await User.findById(tx.userId);
     const receiver = await User.findOne({ email: tx.counterparty });
-    if (!sender || !receiver) return res.status(400).json({ error: "Invalid sender/receiver" });
+    if (!sender || !receiver) return res.status(400).json({ error: "Invalid users" });
 
-    // Check if sender still has funds
     if (sender.balance < tx.amount) {
       tx.status = "FAILED";
       await tx.save();
-      return res.status(400).json({ error: "Insufficient funds" });
+      return res.status(400).json({ error: "Sender has insufficient funds at approval time" });
     }
 
     // Move money
@@ -38,11 +36,10 @@ router.post("/approve/:id", async (req, res) => {
     await sender.save();
     await receiver.save();
 
-    // Update flagged tx
     tx.status = "SUCCESS";
     await tx.save();
 
-    // Create matching RECEIVE record
+    // Add RECEIVE record for receiver
     await Tx.create({
       userId: receiver._id,
       type: "RECEIVE",
@@ -51,13 +48,13 @@ router.post("/approve/:id", async (req, res) => {
       status: "SUCCESS",
     });
 
-    res.json({ ok: true });
+    res.json({ success: true });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
 
-// Reject flagged transaction → no balance change
+// 🔹 Reject a flagged transaction
 router.post("/reject/:id", async (req, res) => {
   try {
     const tx = await Tx.findById(req.params.id);
@@ -67,7 +64,7 @@ router.post("/reject/:id", async (req, res) => {
     tx.status = "FAILED";
     await tx.save();
 
-    res.json({ ok: true });
+    res.json({ success: true });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
